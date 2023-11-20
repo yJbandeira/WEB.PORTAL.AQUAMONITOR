@@ -1,0 +1,26 @@
+.dashboard-page-background {
+  padding-left: 24px;
+  padding-right: 24px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.dashboard-page-background {
+  @media (min-width: 1440px) {
+    max-width: 1440px;
+  }
+}
+
+.dashboard-chart-card {
+  border: 1px solid;
+  border-radius: 8px;
+  border-color: #e6ebf1;
+  box-shadow: inherit;
+}
+
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 16px;
+  margin-right: 16px;
+}

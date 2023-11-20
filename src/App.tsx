@@ -1,12 +1,10 @@
-import React from 'react';
-import AquaLogo from './assets/svg/AquaMonitorLogo.svg';
-import './App.css';
-import SideNavbar from './components/side-navbar';
+import "./App.css";
+import AppRouter from "./routes";
 
 function App() {
   return (
     <div className="App">
-        <SideNavbar/>
+      <AppRouter />
     </div>
   );
 }

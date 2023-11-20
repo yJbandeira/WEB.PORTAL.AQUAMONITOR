@@ -1,10 +1,48 @@
 import "./index.scss";
 import { ReactComponent as AquaLogo } from "../../assets/svg/AquaMonitorLogo.svg";
+import { Box, Divider, Stack } from "@mui/material";
+import { items } from "./config";
+import SideNavItem from "./side-navbar-item";
 
 export default function SideNavbar() {
   return (
     <div className="side-navbar-background">
-      <AquaLogo />
+      <div className="side-navbar-header">
+        <AquaLogo />
+      </div>
+      <Divider sx={{ borderColor: "rgb(47, 55, 70)" }} />
+
+      <Box
+        component="nav"
+        sx={{
+          flexGrow: 1,
+          px: 2,
+          py: 3,
+        }}
+      >
+        <Stack
+          component="ul"
+          spacing={0.5}
+          sx={{
+            listStyle: "none",
+            p: 0,
+            m: 0,
+          }}
+        >
+          {items.map((item) => {
+            return (
+              <SideNavItem
+                title={item.title}
+                active={item.active}
+                disabled={item.disable}
+                external={false}
+                icon={item.icon}
+                path={item.path}
+              />
+            );
+          })}
+        </Stack>
+      </Box>
     </div>
   );
 }
