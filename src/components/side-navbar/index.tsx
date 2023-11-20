@@ -1,10 +1,10 @@
 import "./index.scss";
-import AquaLogo from "../../assets/svg/AquaMonitorLogo.svg";
+import { ReactComponent as AquaLogo } from "../../assets/svg/AquaMonitorLogo.svg";
 
 export default function SideNavbar() {
   return (
     <div className="side-navbar-background">
-      <img src={AquaLogo} className="aqua-logo" alt="logo" />
+      <AquaLogo />
     </div>
   );
 }
