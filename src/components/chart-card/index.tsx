@@ -2,7 +2,7 @@ import { FC, ReactNode } from "react";
 import "./index.scss";
 
 interface IChartCard {
-  headerComponent: ReactNode;
+  headerComponent?: ReactNode;
   title: string;
   children: ReactNode;
 }

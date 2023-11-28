@@ -1,11 +1,13 @@
 import CurrencyDollarIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
-import { Button, Stack, SvgIcon } from "@mui/material";
+import { Box, Button, Stack, SvgIcon } from "@mui/material";
 import IncomeAreaChart from "../../components/bar-chart";
 import "./index.scss";
 import { useEffect, useState } from "react";
 import { AquaMonitorService as http } from "../../services/AquaMonitorService";
 import { ChartCard } from "../../components/chart-card";
 import { HeaderCard } from "../../components/header-card";
+import { DataGrid } from "@mui/x-data-grid";
+import { columns } from "./dataGrid/columns";
 
 interface IItensConsumoInfo {
   id_equipamento: string;
@@ -26,106 +28,90 @@ interface IValoresDashboard {
 export default function MainDashboard() {
   const [listaConsumos, setListaConsumos] = useState<number[]>([]);
   const [listaDiasSemana, setListaDiasSemana] = useState<string[]>([]);
-  const [dadosConsumo, setDadosConsumo] = useState<IItensConsumoInfo[]>();
+  const [dadosConsumo, setDadosConsumo] = useState<IItensConsumoInfo[]>([]);
   const [valoresMesAtual, setValoresMesAtual] = useState<IItensConsumoInfo>();
   const [slot, setSlot] = useState<string>("week");
 
   useEffect(() => {
-    async function getConsumo() {
-      const { status, data } = await http.getInfosConsumos();
-      var listaConsumo: number[] = [];
-      var listaDias: string[] = [];
-      var listaDashboard: Array<IValoresDashboard> = [];
-      var listaPorMes: Array<IItensConsumoInfo> = [];
-
-      data.itens.push({
-        id_equipamento: "a",
-        temperatura: 50,
-        dia_da_semana: "segunda",
-        vazao_litro_acumulada: 50,
-        consumo_diario: 50,
-        id: "",
-        data: "2023-10-20",
-      });
-
-      if (status === 200) {
-        data.itens.reverse();
-
-        data.itens.forEach((x, index) => {
-          var splitData = x.data ? x.data.split("-") : "2023-01-01".split("-");
-          var splitHours = splitData[2].includes(":")
-            ? splitData[2].split(" ")[1].split(":")
-            : `${splitData[2]} 00:00:00`.split(" ")[1].split(":");
-
-          splitData[2] = splitData[2].substring(0, 1);
-
-          var dataAtual = new Date(
-            Number(splitData[0]),
-            Number(splitData[1]) + 1,
-            Number(splitData[2]),
-            Number(splitHours[0]),
-            Number(splitHours[1]),
-            Number(splitHours[2])
-          );
-
-          var dadosDash: IValoresDashboard = {
-            vazao: Number(x.consumo_diario?.toFixed(2)),
-            dia_semana: x.dia_da_semana.substring(0, 3),
-            data: dataAtual,
-          };
-
-          listaDashboard.push(dadosDash);
-
-          if (slot === "month" && index < 30) {
-            listaConsumo.push(Number(x.consumo_diario.toFixed(2)));
-          }
-        });
-        listaDashboard = removerDatasDuplicadas(listaDashboard);
-        listaPorMes = filtrarItensPorMes(data.itens);
-
-        setValoresMesAtual(
-          listaPorMes.find((x) => {
-            var mesAnoAtual = `${new Date().toISOString().split("-")[0]}-${
-              new Date().toISOString().split("-")[1]
-            }`;
-
-            var mesAno = `${x.data.split("-")[0]}-${x.data.split("-")[1]}`;
-
-            if (mesAno === mesAnoAtual) {
-              return x;
-            }
-          })
-        );
-
-        console.log(
-          listaPorMes.find((x) => {
-            var mesAnoAtual = `${new Date().toISOString().split("-")[0]}-${
-              new Date().toISOString().split("-")[1]
-            }`;
-
-            var mesAno = `${x.data.split("-")[0]}-${x.data.split("-")[1]}`;
-
-            if (mesAno === mesAnoAtual) {
-              return x;
-            }
-          })
-        );
-
-        listaDashboard.forEach((x) => {
-          listaConsumo.push(Number.isNaN(x.vazao) ? 0 : x.vazao);
-          listaDias.push(x.dia_semana);
-        });
-
-        console.log(listaDashboard);
-
-        setListaConsumos(listaConsumo);
-        setListaDiasSemana(listaDias);
-        setDadosConsumo(data.itens);
-      }
-    }
-
     getConsumo();
   }, []);
+
+  async function getConsumo() {
+    const { status, data } = await http.getInfosConsumos();
+    var listaConsumo: number[] = [];
+    var listaDias: string[] = [];
+    var listaDashboard: Array<IValoresDashboard> = [];
+    var listaPorMes: Array<IItensConsumoInfo> = [];
+
+    data.itens.push({
+      id_equipamento: "a",
+      temperatura: 50,
+      dia_da_semana: "segunda",
+      vazao_litro_acumulada: 50,
+      consumo_diario: 50,
+      id: "",
+      data: "2023-10-20",
+    });
+
+    if (status === 200) {
+      data.itens.reverse();
+
+      data.itens.forEach((x, index) => {
+        var splitData = x.data ? x.data.split("-") : "2023-01-01".split("-");
+        var splitHours = splitData[2].includes(":")
+          ? splitData[2].split(" ")[1].split(":")
+          : `${splitData[2]} 00:00:00`.split(" ")[1].split(":");
+
+        splitData[2] = splitData[2].substring(0, 1);
+
+        var dataAtual = new Date(
+          Number(splitData[0]),
+          Number(splitData[1]) + 1,
+          Number(splitData[2]),
+          Number(splitHours[0]),
+          Number(splitHours[1]),
+          Number(splitHours[2])
+        );
+
+        var dadosDash: IValoresDashboard = {
+          vazao: Number(x.consumo_diario?.toFixed(2)),
+          dia_semana: x.dia_da_semana.substring(0, 3),
+          data: dataAtual,
+        };
+
+        listaDashboard.push(dadosDash);
+
+        if (slot === "month" && index < 30) {
+          listaConsumo.push(Number(x.consumo_diario.toFixed(2)));
+        }
+      });
+      listaDashboard = removerDatasDuplicadas(listaDashboard);
+      listaPorMes = filtrarItensPorMes(data.itens);
+
+      setValoresMesAtual(
+        listaPorMes.find((x) => {
+          var mesAnoAtual = `${new Date().toISOString().split("-")[0]}-${
+            new Date().toISOString().split("-")[1]
+          }`;
+
+          var mesAno = `${x.data.split("-")[0]}-${x.data.split("-")[1]}`;
+
+          if (mesAno === mesAnoAtual) {
+            return x;
+          }
+        })
+      );
+
+      listaDashboard.forEach((x) => {
+        listaConsumo.push(Number.isNaN(x.vazao) ? 0 : x.vazao);
+        listaDias.push(x.dia_semana);
+      });
+
+      setListaConsumos(listaConsumo);
+      setListaDiasSemana(listaDias);
+      setDadosConsumo(data.itens);
+    }
+  }
 
   function removerDatasDuplicadas(
     lista: IValoresDashboard[]
@@ -255,6 +241,27 @@ export default function MainDashboard() {
           listaDiasSemana={listaDiasSemana}
         />
       </ChartCard>
+
+      <ChartCard title="Últimas leituras">
+        <Box sx={{ height: 400, width: "100%" }}>
+          <DataGrid
+            sx={{ border: "none" }}
+            rows={dadosConsumo}
+            columns={columns}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 100,
+                },
+              },
+            }}
+            pageSizeOptions={[100]}
+            disableRowSelectionOnClick
+          />
+        </Box>
+      </ChartCard>
+
+      <div style={{ height: 100 }} />
     </div>
   );
 }
