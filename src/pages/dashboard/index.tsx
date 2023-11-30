@@ -8,6 +8,7 @@ import { ChartCard } from "../../components/chart-card";
 import { HeaderCard } from "../../components/header-card";
 import { DataGrid } from "@mui/x-data-grid";
 import { columns } from "./dataGrid/columns";
+import { useStore } from "../../store/store";
 
 interface IItensConsumoInfo {
   id_equipamento: string;
@@ -32,11 +33,14 @@ export default function MainDashboard() {
   const [valoresMesAtual, setValoresMesAtual] = useState<IItensConsumoInfo>();
   const [slot, setSlot] = useState<string>("week");
 
+  const { loading, setLoading } = useStore();
+
   useEffect(() => {
     getConsumo();
   }, []);
 
   async function getConsumo() {
+    setLoading(true);
     const { status, data } = await http.getInfosConsumos();
     var listaConsumo: number[] = [];
     var listaDias: string[] = [];
@@ -111,6 +115,7 @@ export default function MainDashboard() {
       setListaDiasSemana(listaDias);
       setDadosConsumo(data.itens);
     }
+    setLoading(false);
   }
 
   function removerDatasDuplicadas(
