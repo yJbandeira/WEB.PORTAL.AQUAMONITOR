@@ -9,6 +9,8 @@ import { HeaderCard } from "../../components/header-card";
 import { DataGrid } from "@mui/x-data-grid";
 import { columns } from "./dataGrid/columns";
 import { useStore } from "../../store/store";
+import TempBarChart from "../../components/temp-chart";
+import UmidadeBarChart from "../../components/umidade-chart";
 
 interface IItensConsumoInfo {
   id_equipamento: string;
@@ -22,12 +24,16 @@ interface IItensConsumoInfo {
 
 interface IValoresDashboard {
   vazao: number;
+  temperatura: number;
+  umidade: number;
   dia_semana: string;
   data: Date;
 }
 
 export default function MainDashboard() {
   const [listaConsumos, setListaConsumos] = useState<number[]>([]);
+  const [listaTemperatura, setListaTemperatura] = useState<number[]>([]);
+  const [listaUmidade, setListaUmidade] = useState<number[]>([]);
   const [listaDiasSemana, setListaDiasSemana] = useState<string[]>([]);
   const [dadosConsumo, setDadosConsumo] = useState<IItensConsumoInfo[]>([]);
   const [valoresMesAtual, setValoresMesAtual] = useState<IItensConsumoInfo>();
@@ -43,52 +49,97 @@ export default function MainDashboard() {
     setLoading(true);
     const { status, data } = await http.getInfosConsumos();
     var listaConsumo: number[] = [];
+    var listaTemperatura: number[] = [];
+    var listaUmidade: number[] = [];
     var listaDias: string[] = [];
     var listaDashboard: Array<IValoresDashboard> = [];
     var listaPorMes: Array<IItensConsumoInfo> = [];
 
+    data.itens = [];
+
+    data.itens.push({
+      id_equipamento: "a",
+      temperatura: 40,
+      dia_da_semana: "terca",
+      vazao_litro_acumulada: 90,
+      consumo_diario: 40,
+      id: "1",
+      umidade: 10,
+      data: "2023-12-05T23:10:59",
+    });
+
+    data.itens.push({
+      id_equipamento: "a",
+      temperatura: 40,
+      dia_da_semana: "segunda",
+      vazao_litro_acumulada: 90,
+      consumo_diario: 40,
+      id: "2",
+      umidade: 10,
+      data: "2023-12-04T23:10:59",
+    });
+
     data.itens.push({
       id_equipamento: "a",
       temperatura: 50,
-      dia_da_semana: "segunda",
+      dia_da_semana: "domingo",
       vazao_litro_acumulada: 50,
       consumo_diario: 50,
-      id: "",
-      data: "2023-10-20",
+      id: "3",
+      umidade: 10,
+      data: "2023-12-03T23:10:59",
+    });
+
+    data.itens.push({
+      id_equipamento: "a",
+      temperatura: 50,
+      dia_da_semana: "domingo",
+      vazao_litro_acumulada: 50,
+      consumo_diario: 60,
+      id: "4",
+      umidade: 10,
+      data: "2023-12-03T23:20:59",
+    });
+
+    data.itens.push({
+      id_equipamento: "a",
+      temperatura: 50,
+      dia_da_semana: "domingo",
+      vazao_litro_acumulada: 50,
+      consumo_diario: 60,
+      id: "5",
+      umidade: 10,
+      data: "2023-11-03T23:20:59",
+    });
+
+    data.itens.push({
+      id_equipamento: "a",
+      temperatura: 50,
+      dia_da_semana: "domingo",
+      vazao_litro_acumulada: 50,
+      consumo_diario: 60,
+      id: "6",
+      umidade: 10,
+      data: "2023-10-03T23:20:59",
     });
 
     if (status === 200) {
       data.itens.reverse();
 
       data.itens.forEach((x, index) => {
-        var splitData = x.data ? x.data.split("-") : "2023-01-01".split("-");
-        var splitHours = splitData[2].includes(":")
-          ? splitData[2].split(" ")[1].split(":")
-          : `${splitData[2]} 00:00:00`.split(" ")[1].split(":");
-
-        splitData[2] = splitData[2].substring(0, 1);
-
-        var dataAtual = new Date(
-          Number(splitData[0]),
-          Number(splitData[1]) + 1,
-          Number(splitData[2]),
-          Number(splitHours[0]),
-          Number(splitHours[1]),
-          Number(splitHours[2])
-        );
+        const dataAtual = new Date(x.data);
 
         var dadosDash: IValoresDashboard = {
           vazao: Number(x.consumo_diario?.toFixed(2)),
           dia_semana: x.dia_da_semana.substring(0, 3),
+          temperatura: x.temperatura,
+          umidade: x.umidade,
           data: dataAtual,
         };
 
         listaDashboard.push(dadosDash);
-
-        if (slot === "month" && index < 30) {
-          listaConsumo.push(Number(x.consumo_diario.toFixed(2)));
-        }
       });
+
       listaDashboard = removerDatasDuplicadas(listaDashboard);
       listaPorMes = filtrarItensPorMes(data.itens);
 
@@ -108,10 +159,14 @@ export default function MainDashboard() {
 
       listaDashboard.forEach((x) => {
         listaConsumo.push(Number.isNaN(x.vazao) ? 0 : x.vazao);
+        listaTemperatura.push(Number.isNaN(x.temperatura) ? 0 : x.temperatura);
+        listaUmidade.push(Number.isNaN(x.umidade) ? 0 : x.umidade);
         listaDias.push(x.dia_semana);
       });
 
       setListaConsumos(listaConsumo);
+      setListaTemperatura(listaTemperatura);
+      setListaUmidade(listaUmidade);
       setListaDiasSemana(listaDias);
       setDadosConsumo(data.itens);
     }
@@ -136,6 +191,23 @@ export default function MainDashboard() {
   }
 
   function filtrarItensPorMes(itens: IItensConsumoInfo[]): IItensConsumoInfo[] {
+    var valoresMensais = new Map<string, number>();
+
+    itens.forEach((x) => {
+      const data = new Date(x.data)
+
+      const mesAno = `${data.getMonth() + 1}-${data.getFullYear()}`;
+
+      if (valoresMensais.has(mesAno)) {
+        valoresMensais.set(
+          mesAno,
+          valoresMensais.get(mesAno)! + x.consumo_diario
+        );
+      } else {
+        valoresMensais.set(mesAno, x.consumo_diario);
+      }
+    });
+
     itens.sort(
       (a, b) => new Date(b.data).getTime() - new Date(a.data).getTime()
     );
@@ -161,11 +233,6 @@ export default function MainDashboard() {
         <HeaderCard
           iconColor="success.main"
           contentText={`${valoresMesAtual?.vazao_litro_acumulada ?? 0} L`}
-          icon={
-            <SvgIcon>
-              <CurrencyDollarIcon />
-            </SvgIcon>
-          }
           title="Consumo total"
         />
 
@@ -176,11 +243,6 @@ export default function MainDashboard() {
               ? (valoresMesAtual?.vazao_litro_acumulada / 1000).toFixed(3)
               : 0
           } m3`}
-          icon={
-            <SvgIcon>
-              <CurrencyDollarIcon />
-            </SvgIcon>
-          }
           title="Consumo total em m3"
         />
 
@@ -192,11 +254,6 @@ export default function MainDashboard() {
             percentage: 20,
             text: "Baseado no mês passado",
           }}
-          icon={
-            <SvgIcon>
-              <CurrencyDollarIcon />
-            </SvgIcon>
-          }
           title="Consumo mensal"
         />
 
@@ -217,35 +274,108 @@ export default function MainDashboard() {
         />
       </div>
 
-      <ChartCard
-        title="Consumo"
-        headerComponent={
-          <Stack direction="row" alignItems="center" spacing={0}>
-            <Button
-              size="small"
-              onClick={() => setSlot("month")}
-              color={slot === "month" ? "primary" : "secondary"}
-              variant={slot === "month" ? "outlined" : "text"}
-            >
-              Mês
-            </Button>
-            <Button
-              size="small"
-              onClick={() => setSlot("week")}
-              color={slot === "week" ? "primary" : "secondary"}
-              variant={slot === "week" ? "outlined" : "text"}
-            >
-              Semana
-            </Button>
-          </Stack>
-        }
-      >
-        <IncomeAreaChart
-          slot={slot}
-          listaConsumos={listaConsumos}
-          listaDiasSemana={listaDiasSemana}
-        />
-      </ChartCard>
+      <div className="charts-row">
+        <ChartCard
+          title="Consumo"
+          width="70%"
+          headerComponent={
+            <Stack direction="row" alignItems="center" spacing={0}>
+              <Button
+                size="small"
+                onClick={() => setSlot("month")}
+                color={slot === "month" ? "primary" : "secondary"}
+                variant={slot === "month" ? "outlined" : "text"}
+              >
+                Mês
+              </Button>
+              <Button
+                size="small"
+                onClick={() => setSlot("week")}
+                color={slot === "week" ? "primary" : "secondary"}
+                variant={slot === "week" ? "outlined" : "text"}
+              >
+                Semana
+              </Button>
+            </Stack>
+          }
+        >
+          <IncomeAreaChart
+            slot={slot}
+            height="530px"
+            listaConsumos={listaConsumos}
+            listaDiasSemana={listaDiasSemana}
+          />
+        </ChartCard>
+
+        <div
+          style={{
+            width: "30%",
+            display: "flex",
+            gap: "16px",
+            flexDirection: "column",
+          }}
+        >
+          <ChartCard
+            title="Temperatura"
+            // headerComponent={
+            //   <Stack direction="row" alignItems="center" spacing={0}>
+            //     <Button
+            //       size="small"
+            //       onClick={() => setSlot("month")}
+            //       color={slot === "month" ? "primary" : "secondary"}
+            //       variant={slot === "month" ? "outlined" : "text"}
+            //     >
+            //       Mês
+            //     </Button>
+            //     <Button
+            //       size="small"
+            //       onClick={() => setSlot("week")}
+            //       color={slot === "week" ? "primary" : "secondary"}
+            //       variant={slot === "week" ? "outlined" : "text"}
+            //     >
+            //       Semana
+            //     </Button>
+            //   </Stack>
+            // }
+          >
+            <TempBarChart
+              height="225px"
+              listaTemperatura={listaTemperatura}
+              listaDiasSemana={listaDiasSemana}
+            />
+          </ChartCard>
+
+          <ChartCard
+            title="Umidade"
+            // headerComponent={
+            //   <Stack direction="row" alignItems="center" spacing={0}>
+            //     <Button
+            //       size="small"
+            //       onClick={() => setSlot("month")}
+            //       color={slot === "month" ? "primary" : "secondary"}
+            //       variant={slot === "month" ? "outlined" : "text"}
+            //     >
+            //       Mês
+            //     </Button>
+            //     <Button
+            //       size="small"
+            //       onClick={() => setSlot("week")}
+            //       color={slot === "week" ? "primary" : "secondary"}
+            //       variant={slot === "week" ? "outlined" : "text"}
+            //     >
+            //       Semana
+            //     </Button>
+            //   </Stack>
+            // }
+          >
+            <UmidadeBarChart
+              height="225px"
+              listaUmidade={listaUmidade}
+              listaDiasSemana={listaDiasSemana}
+            />
+          </ChartCard>
+        </div>
+      </div>
 
       <ChartCard title="Últimas leituras">
         <Box sx={{ height: 400, width: "100%" }}>

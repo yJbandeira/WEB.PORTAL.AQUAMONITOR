@@ -29,16 +29,19 @@ export default function SideNavbar() {
             m: 0,
           }}
         >
-          {items.map((item) => {
+          {items.map((item, index) => {
             return (
-              <SideNavItem
-                title={item.title}
-                active={item.active}
-                disabled={item.disable}
-                external={false}
-                icon={item.icon}
-                path={item.path}
-              />
+              <div key={`nav-${index}`}>
+                <SideNavItem
+                  title={item.title}
+                  active={item.active}
+                  disabled={item.disable}
+                  external={false}
+                  icon={item.icon}
+                  path={item.path}
+                  innerKey={`nav-item-${index}`}
+                />
+              </div>
             );
           })}
         </Stack>

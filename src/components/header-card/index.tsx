@@ -6,7 +6,7 @@ import "./index.scss";
 
 interface IChartCard {
   gainLoss?: IGainLoss;
-  icon: ReactNode;
+  icon?: ReactNode;
   title: string;
   contentText: string;
   iconColor: string;
@@ -40,15 +40,17 @@ export const HeaderCard: FC<IChartCard> = ({
           <span className="header-card-title"> {title}</span>
           <h4 className="header-card-content-text"> {contentText}</h4>
         </div>
-        <Avatar
-          sx={{
-            backgroundColor: iconColor,
-            height: 56,
-            width: 56,
-          }}
-        >
-          <SvgIcon>{icon}</SvgIcon>
-        </Avatar>
+        {icon && (
+          <Avatar
+            sx={{
+              backgroundColor: iconColor,
+              height: 56,
+              width: 56,
+            }}
+          >
+            <SvgIcon>{icon}</SvgIcon>
+          </Avatar>
+        )}
       </div>
       {gainLoss && (
         <div className="header-card-bottom">

@@ -3,10 +3,9 @@ import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import ReactApexChart from "react-apexcharts";
 
-interface IncomeAreaChartProps {
-  slot: any;
+interface TempBarChartProps {
   height?: string;
-  listaConsumos: Number[];
+  listaTemperatura: Number[];
   listaDiasSemana: String[];
 }
 
@@ -30,7 +29,11 @@ const areaChartOptions = {
   },
 };
 
-const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaDiasSemana, height = 450 }) => {
+const TempBarChart: FC<TempBarChartProps> = ({
+  listaTemperatura,
+  listaDiasSemana,
+  height = 450,
+}) => {
   const theme = useTheme();
 
   const { primary, secondary } = theme.palette.text;
@@ -41,25 +44,9 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
   useEffect(() => {
     setOptions((prevState: any) => ({
       ...prevState,
-      colors: ["#1E88E5", "#388E3C"],
+      colors: ["#1E88E5"],
       xaxis: {
-        categories:
-          slot === "month"
-            ? [
-                "Dez 22",
-                "Jan",
-                "Fev",
-                "Mar",
-                "Abr",
-                "Mai",
-                "Jun",
-                "Jul",
-                "Ago",
-                "Set",
-                "Out",
-                "Nov"
-              ]
-            : listaDiasSemana,
+        categories: listaDiasSemana,
         labels: {
           style: {
             colors: [
@@ -82,14 +69,23 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
           show: true,
           color: line,
         },
-        tickAmount: slot === "month" ? 11 : 7,
+        tickAmount: 7,
       },
       yaxis: {
+        categories: ["0 C", "5 C", "10 C", "25 C", "50 C ", "100 C"],
         labels: {
           style: {
-            colors: [secondary],
+            colors: [
+              secondary,
+              secondary,
+              secondary,
+              secondary,
+              secondary,
+              secondary,
+            ],
           },
         },
+        tickAmount: 6,
       },
       grid: {
         borderColor: line,
@@ -98,52 +94,34 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
         theme: "light",
       },
     }));
-  }, [primary, secondary, line, theme, slot, listaConsumos]);
+  }, [primary, secondary, line, theme, listaTemperatura]);
 
   const [series, setSeries] = useState<any>([
     {
-      name: "Consumo em L",
+      name: "Temperatura da Água",
       data: [0, 86, 28, 115, 48, 210, 136],
-    },
-    {
-      name: "Média geral em L",
-      data: [0, 43, 14, 56, 24, 105, 68],
     },
   ]);
 
   useEffect(() => {
     setSeries([
       {
-        name: "Consumo em L",
-        data:
-          slot === "month"
-            ? [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35]
-            : listaConsumos,
-      },
-      {
-        name: "Média geral em L",
-        data:
-          slot === "month"
-            ? [110, 60, 150, 35, 60, 36, 26, 45, 65, 52, 53, 41]
-            : [11, 32, 20, 12, 5, 25],
+        name: "Temperatura da Água",
+        data: listaTemperatura,
       },
     ]);
-  }, [slot, listaConsumos]);
+  }, [listaTemperatura]);
 
   return (
-    <div style={{maxWidth: 1400}}>
+    <div style={{ maxWidth: 1400 }}>
       <ReactApexChart
         options={options}
         series={series}
-        type="area"
+        type="bar"
         height={height}
       />
     </div>
   );
 };
 
-IncomeAreaChart.propTypes = {
-  slot: PropTypes.string,
-};
-
-export default IncomeAreaChart;
+export default TempBarChart;

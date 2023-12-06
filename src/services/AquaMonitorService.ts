@@ -17,6 +17,7 @@ interface IConsumoInfos {
 interface IItensConsumoInfo {
   id_equipamento: string;
   temperatura: number;
+  umidade: number;
   dia_da_semana: string;
   vazao_litro_acumulada: number;
   consumo_diario: number;

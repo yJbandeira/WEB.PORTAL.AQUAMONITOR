@@ -3,10 +3,9 @@ import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import ReactApexChart from "react-apexcharts";
 
-interface IncomeAreaChartProps {
-  slot: any;
+interface UmidadeBarChartProps {
   height?: string;
-  listaConsumos: Number[];
+  listaUmidade: Number[];
   listaDiasSemana: String[];
 }
 
@@ -30,7 +29,7 @@ const areaChartOptions = {
   },
 };
 
-const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaDiasSemana, height = 450 }) => {
+const UmidadeBarChart: FC<UmidadeBarChartProps> = ({ listaUmidade, listaDiasSemana, height = 450 }) => {
   const theme = useTheme();
 
   const { primary, secondary } = theme.palette.text;
@@ -43,23 +42,7 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
       ...prevState,
       colors: ["#1E88E5", "#388E3C"],
       xaxis: {
-        categories:
-          slot === "month"
-            ? [
-                "Dez 22",
-                "Jan",
-                "Fev",
-                "Mar",
-                "Abr",
-                "Mai",
-                "Jun",
-                "Jul",
-                "Ago",
-                "Set",
-                "Out",
-                "Nov"
-              ]
-            : listaDiasSemana,
+        categories: listaDiasSemana,
         labels: {
           style: {
             colors: [
@@ -82,7 +65,7 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
           show: true,
           color: line,
         },
-        tickAmount: slot === "month" ? 11 : 7,
+        tickAmount: 7,
       },
       yaxis: {
         labels: {
@@ -98,52 +81,34 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
         theme: "light",
       },
     }));
-  }, [primary, secondary, line, theme, slot, listaConsumos]);
+  }, [primary, secondary, line, theme, listaUmidade]);
 
   const [series, setSeries] = useState<any>([
     {
       name: "Consumo em L",
       data: [0, 86, 28, 115, 48, 210, 136],
-    },
-    {
-      name: "Média geral em L",
-      data: [0, 43, 14, 56, 24, 105, 68],
-    },
+    }
   ]);
 
   useEffect(() => {
     setSeries([
       {
-        name: "Consumo em L",
-        data:
-          slot === "month"
-            ? [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35]
-            : listaConsumos,
-      },
-      {
-        name: "Média geral em L",
-        data:
-          slot === "month"
-            ? [110, 60, 150, 35, 60, 36, 26, 45, 65, 52, 53, 41]
-            : [11, 32, 20, 12, 5, 25],
-      },
+        name: "Umidade",
+        data: listaUmidade,
+      }
     ]);
-  }, [slot, listaConsumos]);
+  }, [listaUmidade]);
 
   return (
     <div style={{maxWidth: 1400}}>
       <ReactApexChart
         options={options}
         series={series}
-        type="area"
+        type="bar"
         height={height}
       />
     </div>
   );
 };
 
-IncomeAreaChart.propTypes = {
-  slot: PropTypes.string,
-};
-
-export default IncomeAreaChart;
+export default UmidadeBarChart;

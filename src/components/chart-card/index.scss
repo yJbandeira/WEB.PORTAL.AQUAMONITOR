@@ -1,13 +1,12 @@
-#chard-card {
+.chard-card {
   border: 1px solid;
   border-radius: 8px;
   border-color: #e6ebf1;
   box-shadow: inherit;
-
-  .chart-card-header {
-    display: flex;
-    justify-content: space-between;
-    margin-left: 16px;
-    margin-right: 16px;
-  }
+}
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 16px;
+  margin-right: 16px;
 }

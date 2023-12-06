@@ -7,7 +7,7 @@ export const columns: GridColDef[] = [
     {
       field: "id_equipamento",
       headerName: "Equipamento",
-      width: 150,
+      width: 160,
     },
     {
       field: "data",
@@ -24,7 +24,7 @@ export const columns: GridColDef[] = [
       renderCell: (e) => {
         return <div>{Number(e.row.consumo_diario ?? 0).toFixed(2)} L</div>;
       },
-      width: 150,
+      width: 180,
     },
     {
       field: "temperatura",
@@ -33,7 +33,16 @@ export const columns: GridColDef[] = [
       renderCell: (e) => {
         return <div>{e.row.temperatura} °C</div>;
       },
-      width: 120,
+      width: 150,
+    },
+    {
+      field: "umidade",
+      headerName: "Umidade",
+      type: "number",
+      renderCell: (e) => {
+        return <div>{e.row.umidade}%</div>;
+      },
+      width: 150,
     },
     {
       field: "status",
