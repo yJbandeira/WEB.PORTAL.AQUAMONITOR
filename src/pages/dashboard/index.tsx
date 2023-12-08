@@ -11,6 +11,8 @@ import { columns } from "./dataGrid/columns";
 import { useStore } from "../../store/store";
 import TempBarChart from "../../components/temp-chart";
 import UmidadeBarChart from "../../components/umidade-chart";
+import { format, parse } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 interface IItensConsumoInfo {
   id_equipamento: string;
@@ -31,13 +33,17 @@ interface IValoresDashboard {
 }
 
 export default function MainDashboard() {
-  const [listaConsumos, setListaConsumos] = useState<number[]>([]);
+  const [listaConsumoDias, setListaConsumoDias] = useState<number[]>([]);
+  const [listaDiasSemana, setListaDiasSemana] = useState<string[]>([]);
+  const [listaConsumoMeses, setListaConsumoMeses] = useState<number[]>([]);
+  const [listaMeses, setListaMeses] = useState<string[]>([]);
   const [listaTemperatura, setListaTemperatura] = useState<number[]>([]);
   const [listaUmidade, setListaUmidade] = useState<number[]>([]);
-  const [listaDiasSemana, setListaDiasSemana] = useState<string[]>([]);
   const [dadosConsumo, setDadosConsumo] = useState<IItensConsumoInfo[]>([]);
-  const [valoresMesAtual, setValoresMesAtual] = useState<IItensConsumoInfo>();
+  const [consumoMes, setConsumoMes] = useState<number>();
   const [slot, setSlot] = useState<string>("week");
+  const [consumoTotalMes, setConsumoTotalMes] = useState<number>();
+  const [gainLossConsumo, setGainLossConsumo] = useState<number>(0);
 
   const { loading, setLoading } = useStore();
 
@@ -106,7 +112,7 @@ export default function MainDashboard() {
       temperatura: 50,
       dia_da_semana: "domingo",
       vazao_litro_acumulada: 50,
-      consumo_diario: 60,
+      consumo_diario: 195,
       id: "5",
       umidade: 10,
       data: "2023-11-03T23:20:59",
@@ -141,21 +147,7 @@ export default function MainDashboard() {
       });
 
       listaDashboard = removerDatasDuplicadas(listaDashboard);
-      listaPorMes = filtrarItensPorMes(data.itens);
-
-      setValoresMesAtual(
-        listaPorMes.find((x) => {
-          var mesAnoAtual = `${new Date().toISOString().split("-")[0]}-${
-            new Date().toISOString().split("-")[1]
-          }`;
-
-          var mesAno = `${x.data.split("-")[0]}-${x.data.split("-")[1]}`;
-
-          if (mesAno === mesAnoAtual) {
-            return x;
-          }
-        })
-      );
+      filtrarItensPorMes(data.itens);
 
       listaDashboard.forEach((x) => {
         listaConsumo.push(Number.isNaN(x.vazao) ? 0 : x.vazao);
@@ -164,7 +156,7 @@ export default function MainDashboard() {
         listaDias.push(x.dia_semana);
       });
 
-      setListaConsumos(listaConsumo);
+      setListaConsumoDias(listaConsumo);
       setListaTemperatura(listaTemperatura);
       setListaUmidade(listaUmidade);
       setListaDiasSemana(listaDias);
@@ -190,41 +182,63 @@ export default function MainDashboard() {
     return Array.from(mapaDataMaisRecente.values());
   }
 
-  function filtrarItensPorMes(itens: IItensConsumoInfo[]): IItensConsumoInfo[] {
-    var valoresMensais = new Map<string, number>();
+  function filtrarItensPorMes(itens: IItensConsumoInfo[]) {
+    var valoresMensais = new Map<string, { total: number; mes: number }>();
+    let consumoMeses: number[] = [];
+    let listaConMeses: string[] = [];
 
+    //Setar os valores do mes atual para os cards
     itens.forEach((x) => {
-      const data = new Date(x.data)
+      const data = new Date(x.data);
 
       const mesAno = `${data.getMonth() + 1}-${data.getFullYear()}`;
 
       if (valoresMensais.has(mesAno)) {
-        valoresMensais.set(
-          mesAno,
-          valoresMensais.get(mesAno)! + x.consumo_diario
-        );
+        valoresMensais.set(mesAno, {
+          mes: valoresMensais.get(mesAno)?.mes! + x.consumo_diario,
+          total: x.vazao_litro_acumulada,
+        });
       } else {
-        valoresMensais.set(mesAno, x.consumo_diario);
+        valoresMensais.set(mesAno, {
+          mes: x.consumo_diario,
+          total: x.vazao_litro_acumulada,
+        });
       }
     });
 
-    itens.sort(
-      (a, b) => new Date(b.data).getTime() - new Date(a.data).getTime()
+    //Seta os valores dos cards
+    const consumoMesAtual = valoresMensais.get(
+      `${new Date().getMonth() + 1}-${new Date().getFullYear()}`
     );
 
-    const itensFiltrados: IItensConsumoInfo[] = [];
-    const mesesFiltrados: Set<number> = new Set();
+    //Adiciona os meses e os as somas desses meses, para aparecer no dashboard mensal
+    valoresMensais.forEach((value, key) => {
+      consumoMeses.push(value.mes);
 
-    for (const item of itens) {
-      const mes = new Date(item.data).getMonth();
+      const parsedDate = parse(key, "MM-yyyy", new Date());
+      const formattedDate = format(parsedDate, "MMM yy", { locale: ptBR });
+      listaConMeses.push(
+        //Primeira letra maíuscula
+        formattedDate[0].toUpperCase() + formattedDate.substring(1)
+        //Removendo o ano, caso seja o ano atual, para ficar apenas o mes
+        .replace(new Date().getFullYear().toString().substring(2), ""));
+    });
 
-      if (!mesesFiltrados.has(mes)) {
-        itensFiltrados.push(item);
-        mesesFiltrados.add(mes);
-      }
-    }
+    validGainLossConsumoMes(consumoMeses);
 
-    return itensFiltrados;
+    setConsumoMes(consumoMesAtual?.mes);
+    setConsumoTotalMes(consumoMesAtual?.total);
+
+    setListaConsumoMeses(consumoMeses);
+    setListaMeses(listaConMeses);
+  }
+
+  function validGainLossConsumoMes(values: number[]) {
+    values.reverse();
+
+    const gainLoss = ((values[0] - values[1]) / values[1]) * 100;
+
+    setGainLossConsumo(Number(gainLoss.toFixed(0)));
   }
 
   return (
@@ -232,26 +246,24 @@ export default function MainDashboard() {
       <div className="headers-cards">
         <HeaderCard
           iconColor="success.main"
-          contentText={`${valoresMesAtual?.vazao_litro_acumulada ?? 0} L`}
+          contentText={`${consumoTotalMes ?? 0} L`}
           title="Consumo total"
         />
 
         <HeaderCard
           iconColor="success.main"
           contentText={`${
-            valoresMesAtual?.vazao_litro_acumulada
-              ? (valoresMesAtual?.vazao_litro_acumulada / 1000).toFixed(3)
-              : 0
+            consumoTotalMes ? (consumoTotalMes / 1000).toFixed(3) : 0
           } m3`}
           title="Consumo total em m3"
         />
 
         <HeaderCard
           iconColor="success.main"
-          contentText={`${valoresMesAtual?.consumo_diario ?? 0} L`}
+          contentText={`${consumoMes ?? 0} L`}
           gainLoss={{
-            gain: false,
-            percentage: 20,
+            gain: gainLossConsumo > 0,
+            percentage: gainLossConsumo,
             text: "Baseado no mês passado",
           }}
           title="Consumo mensal"
@@ -302,8 +314,10 @@ export default function MainDashboard() {
           <IncomeAreaChart
             slot={slot}
             height="530px"
-            listaConsumos={listaConsumos}
+            listaConsumoDias={listaConsumoDias}
             listaDiasSemana={listaDiasSemana}
+            listaConsumoMeses={listaConsumoMeses}
+            listaMeses={listaMeses}
           />
         </ChartCard>
 

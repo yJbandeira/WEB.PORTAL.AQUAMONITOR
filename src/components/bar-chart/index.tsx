@@ -6,8 +6,10 @@ import ReactApexChart from "react-apexcharts";
 interface IncomeAreaChartProps {
   slot: any;
   height?: string;
-  listaConsumos: Number[];
-  listaDiasSemana: String[];
+  listaConsumoDias: number[];
+  listaDiasSemana: string[];
+  listaConsumoMeses: number[];
+  listaMeses: string[];
 }
 
 const areaChartOptions = {
@@ -30,7 +32,7 @@ const areaChartOptions = {
   },
 };
 
-const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaDiasSemana, height = 450 }) => {
+const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumoDias, listaDiasSemana, listaConsumoMeses, listaMeses, height = 450 }) => {
   const theme = useTheme();
 
   const { primary, secondary } = theme.palette.text;
@@ -45,20 +47,7 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
       xaxis: {
         categories:
           slot === "month"
-            ? [
-                "Dez 22",
-                "Jan",
-                "Fev",
-                "Mar",
-                "Abr",
-                "Mai",
-                "Jun",
-                "Jul",
-                "Ago",
-                "Set",
-                "Out",
-                "Nov"
-              ]
+            ? listaMeses
             : listaDiasSemana,
         labels: {
           style: {
@@ -98,7 +87,7 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
         theme: "light",
       },
     }));
-  }, [primary, secondary, line, theme, slot, listaConsumos]);
+  }, [primary, secondary, line, theme, slot, listaConsumoDias, listaConsumoMeses]);
 
   const [series, setSeries] = useState<any>([
     {
@@ -117,8 +106,8 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
         name: "Consumo em L",
         data:
           slot === "month"
-            ? [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35]
-            : listaConsumos,
+            ? listaConsumoMeses
+            : listaConsumoDias,
       },
       {
         name: "Média geral em L",
@@ -128,7 +117,7 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumos, listaD
             : [11, 32, 20, 12, 5, 25],
       },
     ]);
-  }, [slot, listaConsumos]);
+  }, [slot, listaConsumoDias, listaConsumoMeses]);
 
   return (
     <div style={{maxWidth: 1400}}>

@@ -26,11 +26,11 @@ export const HeaderCard: FC<IChartCard> = ({
   iconColor,
 }) => {
   const [gainLossColor, setGainLossColor] = useState<string>(
-    gainLoss?.gain ? "#2e7d32" : "#d32f2f"
+    gainLoss?.gain ? "#d32f2f" : "#2e7d32"
   );
 
   useEffect(() => {
-    setGainLossColor(gainLoss?.gain ? "#2e7d32" : "#d32f2f");
+    setGainLossColor(gainLoss?.gain ? "#d32f2f" : "#2e7d32");
   }, [gainLoss?.gain]);
 
   return (
@@ -56,7 +56,7 @@ export const HeaderCard: FC<IChartCard> = ({
         <div className="header-card-bottom">
           <div className="header-card-bottom-gainloss">
             <SvgIcon
-              color={gainLoss.gain ? "success" : "error"}
+              color={gainLoss.gain ? "error" : "success"}
               fontSize="small"
             >
               {gainLoss.gain ? <ArrowUpIcon /> : <ArrowDownIcon />}
