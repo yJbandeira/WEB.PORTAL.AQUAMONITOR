@@ -24,8 +24,6 @@ const router = createBrowserRouter([
   },
 ]);
 
-interface IAppRouter {}
-
-export default function AppRouter({}: IAppRouter) {
+export default function AppRouter() {
   return <RouterProvider router={router}></RouterProvider>;
 }

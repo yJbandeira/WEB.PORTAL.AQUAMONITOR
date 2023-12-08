@@ -36,9 +36,7 @@ export default function SideNavbar() {
                   title={item.title}
                   active={item.active}
                   disabled={item.disable}
-                  external={false}
                   icon={item.icon}
-                  path={item.path}
                   innerKey={`nav-item-${index}`}
                 />
               </div>

@@ -1,7 +1,6 @@
 import {
   Avatar,
   Badge,
-  Box,
   IconButton,
   Stack,
   SvgIcon,

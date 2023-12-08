@@ -12,12 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 
-interface FormValues {
-  email: string;
-  password: string;
-  submit: null | string;
-}
-
 export default function Page() {
   const [method, setMethod] = useState<string>("email");
 

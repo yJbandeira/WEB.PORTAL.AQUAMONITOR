@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import ReactApexChart from "react-apexcharts";
 
@@ -81,7 +80,7 @@ const UmidadeBarChart: FC<UmidadeBarChartProps> = ({ listaUmidade, listaDiasSema
         theme: "light",
       },
     }));
-  }, [primary, secondary, line, theme, listaUmidade]);
+  }, [primary, secondary, line, theme, listaUmidade, listaDiasSemana]);
 
   const [series, setSeries] = useState<any>([
     {

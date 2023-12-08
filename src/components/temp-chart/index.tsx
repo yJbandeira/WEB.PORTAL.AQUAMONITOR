@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import ReactApexChart from "react-apexcharts";
 
@@ -94,7 +93,7 @@ const TempBarChart: FC<TempBarChartProps> = ({
         theme: "light",
       },
     }));
-  }, [primary, secondary, line, theme, listaTemperatura]);
+  }, [primary, secondary, line, theme, listaTemperatura, listaDiasSemana]);
 
   const [series, setSeries] = useState<any>([
     {

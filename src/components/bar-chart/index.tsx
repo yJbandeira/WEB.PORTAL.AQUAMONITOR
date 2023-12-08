@@ -87,7 +87,7 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumoDias, lis
         theme: "light",
       },
     }));
-  }, [primary, secondary, line, theme, slot, listaConsumoDias, listaConsumoMeses]);
+  }, [primary, secondary, line, theme, slot, listaConsumoDias, listaConsumoMeses, listaMeses, listaDiasSemana]);
 
   const [series, setSeries] = useState<any>([
     {

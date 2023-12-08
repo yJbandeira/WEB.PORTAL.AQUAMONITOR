@@ -3,11 +3,10 @@ import { Outlet } from "react-router-dom";
 import "./index.scss";
 import HeaderPage from "../../components/header";
 import { useStore } from "../../store/store";
-import { useEffect } from "react";
 import { Backdrop, CircularProgress } from "@mui/material";
 
 export default function MainPage() {
-  const { loading, setLoading } = useStore();
+  const { loading } = useStore();
 
   return (
     <>

@@ -45,10 +45,11 @@ export default function MainDashboard() {
   const [consumoTotalMes, setConsumoTotalMes] = useState<number>();
   const [gainLossConsumo, setGainLossConsumo] = useState<number>(0);
 
-  const { loading, setLoading } = useStore();
+  const { setLoading } = useStore();
 
   useEffect(() => {
     getConsumo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function getConsumo() {
@@ -59,7 +60,6 @@ export default function MainDashboard() {
     var listaUmidade: number[] = [];
     var listaDias: string[] = [];
     var listaDashboard: Array<IValoresDashboard> = [];
-    var listaPorMes: Array<IItensConsumoInfo> = [];
 
     data.itens = [];
 

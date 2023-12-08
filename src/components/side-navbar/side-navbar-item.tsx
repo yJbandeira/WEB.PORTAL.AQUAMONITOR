@@ -5,15 +5,13 @@ import { Box, ButtonBase } from "@mui/material";
 interface SideNavItemProps {
   active?: boolean;
   disabled?: boolean;
-  external?: boolean;
   icon?: ReactNode;
-  path?: string;
   title: string;
   innerKey: string;
 }
 
 const SideNavItem: FC<SideNavItemProps> = (props) => {
-  const { active = false, disabled, external, icon, path, title, innerKey } = props;
+  const { active = false, disabled, icon, title, innerKey } = props;
 
   return (
     <li key={innerKey}>
@@ -81,9 +79,7 @@ const SideNavItem: FC<SideNavItemProps> = (props) => {
 SideNavItem.propTypes = {
   active: PropTypes.bool,
   disabled: PropTypes.bool,
-  external: PropTypes.bool,
   icon: PropTypes.node,
-  path: PropTypes.string,
   title: PropTypes.string.isRequired,
 };
 
