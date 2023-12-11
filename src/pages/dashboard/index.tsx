@@ -1,5 +1,6 @@
 import CurrencyDollarIcon from "@heroicons/react/24/solid/CurrencyDollarIcon";
-import { Box, Button, Stack, SvgIcon } from "@mui/material";
+import ArrowPathIcon from "@heroicons/react/24/solid/ArrowPathIcon";
+import { Box, Button, IconButton, Stack, SvgIcon } from "@mui/material";
 import IncomeAreaChart from "../../components/bar-chart";
 import "./index.scss";
 import { useEffect, useState } from "react";
@@ -175,11 +176,11 @@ export default function MainDashboard() {
     });
 
     validGainLossConsumoMes(consumoMeses);
-    validGainLossTarifaMes(tarifaMeses)
+    validGainLossTarifaMes(tarifaMeses);
 
     setConsumoMes(consumoMesAtual?.mes);
     setConsumoTotalMes(consumoMesAtual?.total);
-    setTarifaMes(consumoMesAtual?.tarifa)
+    setTarifaMes(consumoMesAtual?.tarifa);
 
     setListaConsumoMeses(consumoMeses);
     setListaMeses(listaConMeses);
@@ -252,6 +253,11 @@ export default function MainDashboard() {
           width="70%"
           headerComponent={
             <Stack direction="row" alignItems="center" spacing={0}>
+              <IconButton onClick={() => getConsumo()}>
+                <SvgIcon>
+                  <ArrowPathIcon />
+                </SvgIcon>
+              </IconButton>
               <Button
                 size="small"
                 onClick={() => setSlot("month")}
