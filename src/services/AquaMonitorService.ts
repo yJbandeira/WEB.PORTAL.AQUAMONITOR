@@ -23,6 +23,7 @@ interface IItensConsumoInfo {
   consumo_diario: number;
   id: string;
   data: string;
+  tarifa: number;
 }
 
 export const AquaMonitorService = {

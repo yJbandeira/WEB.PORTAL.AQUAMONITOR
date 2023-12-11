@@ -30,6 +30,8 @@ interface IValoresDashboard {
   umidade: number;
   dia_semana: string;
   data: Date;
+  vazao_acumulada: number;
+  tarifa: number;
 }
 
 export default function MainDashboard() {
@@ -41,9 +43,11 @@ export default function MainDashboard() {
   const [listaUmidade, setListaUmidade] = useState<number[]>([]);
   const [dadosConsumo, setDadosConsumo] = useState<IItensConsumoInfo[]>([]);
   const [consumoMes, setConsumoMes] = useState<number>();
+  const [tarifaMes, setTarifaMes] = useState<number>();
   const [slot, setSlot] = useState<string>("week");
   const [consumoTotalMes, setConsumoTotalMes] = useState<number>();
   const [gainLossConsumo, setGainLossConsumo] = useState<number>(0);
+  const [gainLossTarifa, setGainLossTarifa] = useState<number>(0);
 
   const { setLoading } = useStore();
 
@@ -61,77 +65,7 @@ export default function MainDashboard() {
     var listaDias: string[] = [];
     var listaDashboard: Array<IValoresDashboard> = [];
 
-    data.itens = [];
-
-    data.itens.push({
-      id_equipamento: "a",
-      temperatura: 40,
-      dia_da_semana: "terca",
-      vazao_litro_acumulada: 90,
-      consumo_diario: 40,
-      id: "1",
-      umidade: 10,
-      data: "2023-12-05T23:10:59",
-    });
-
-    data.itens.push({
-      id_equipamento: "a",
-      temperatura: 40,
-      dia_da_semana: "segunda",
-      vazao_litro_acumulada: 90,
-      consumo_diario: 40,
-      id: "2",
-      umidade: 10,
-      data: "2023-12-04T23:10:59",
-    });
-
-    data.itens.push({
-      id_equipamento: "a",
-      temperatura: 50,
-      dia_da_semana: "domingo",
-      vazao_litro_acumulada: 50,
-      consumo_diario: 50,
-      id: "3",
-      umidade: 10,
-      data: "2023-12-03T23:10:59",
-    });
-
-    data.itens.push({
-      id_equipamento: "a",
-      temperatura: 50,
-      dia_da_semana: "domingo",
-      vazao_litro_acumulada: 50,
-      consumo_diario: 60,
-      id: "4",
-      umidade: 10,
-      data: "2023-12-03T23:20:59",
-    });
-
-    data.itens.push({
-      id_equipamento: "a",
-      temperatura: 50,
-      dia_da_semana: "domingo",
-      vazao_litro_acumulada: 50,
-      consumo_diario: 195,
-      id: "5",
-      umidade: 10,
-      data: "2023-11-03T23:20:59",
-    });
-
-    data.itens.push({
-      id_equipamento: "a",
-      temperatura: 50,
-      dia_da_semana: "domingo",
-      vazao_litro_acumulada: 50,
-      consumo_diario: 60,
-      id: "6",
-      umidade: 10,
-      data: "2023-10-03T23:20:59",
-    });
-
     if (status === 200) {
-      data.itens.reverse();
-
       data.itens.forEach((x, index) => {
         const dataAtual = new Date(x.data);
 
@@ -141,13 +75,15 @@ export default function MainDashboard() {
           temperatura: x.temperatura,
           umidade: x.umidade,
           data: dataAtual,
+          vazao_acumulada: x.vazao_litro_acumulada,
+          tarifa: x.tarifa,
         };
 
         listaDashboard.push(dadosDash);
       });
 
       listaDashboard = removerDatasDuplicadas(listaDashboard);
-      filtrarItensPorMes(data.itens);
+      filtrarItensPorMes(listaDashboard);
 
       listaDashboard.forEach((x) => {
         listaConsumo.push(Number.isNaN(x.vazao) ? 0 : x.vazao);
@@ -160,7 +96,7 @@ export default function MainDashboard() {
       setListaTemperatura(listaTemperatura);
       setListaUmidade(listaUmidade);
       setListaDiasSemana(listaDias);
-      setDadosConsumo(data.itens);
+      setDadosConsumo(data.itens.reverse());
     }
     setLoading(false);
   }
@@ -171,6 +107,10 @@ export default function MainDashboard() {
     const mapaDataMaisRecente = new Map<string, IValoresDashboard>();
 
     lista.forEach((objeto) => {
+      //Ajuste no horario de timezone, para pegar corretamente a data
+      const offsetMinutes = objeto.data.getTimezoneOffset();
+      objeto.data.setMinutes(objeto.data.getMinutes() - offsetMinutes);
+
       const dataString = objeto.data.toISOString().split("T")[0];
       const dataMaisRecente = mapaDataMaisRecente.get(dataString);
 
@@ -182,9 +122,13 @@ export default function MainDashboard() {
     return Array.from(mapaDataMaisRecente.values());
   }
 
-  function filtrarItensPorMes(itens: IItensConsumoInfo[]) {
-    var valoresMensais = new Map<string, { total: number; mes: number }>();
+  function filtrarItensPorMes(itens: IValoresDashboard[]) {
+    var valoresMensais = new Map<
+      string,
+      { total: number; mes: number; tarifa: number }
+    >();
     let consumoMeses: number[] = [];
+    let tarifaMeses: number[] = [];
     let listaConMeses: string[] = [];
 
     //Setar os valores do mes atual para os cards
@@ -195,13 +139,15 @@ export default function MainDashboard() {
 
       if (valoresMensais.has(mesAno)) {
         valoresMensais.set(mesAno, {
-          mes: valoresMensais.get(mesAno)?.mes! + x.consumo_diario,
-          total: x.vazao_litro_acumulada,
+          mes: valoresMensais.get(mesAno)?.mes! + x.vazao,
+          total: x.vazao_acumulada,
+          tarifa: x.tarifa,
         });
       } else {
         valoresMensais.set(mesAno, {
-          mes: x.consumo_diario,
-          total: x.vazao_litro_acumulada,
+          mes: x.vazao,
+          total: x.vazao_acumulada,
+          tarifa: x.tarifa,
         });
       }
     });
@@ -214,20 +160,26 @@ export default function MainDashboard() {
     //Adiciona os meses e os as somas desses meses, para aparecer no dashboard mensal
     valoresMensais.forEach((value, key) => {
       consumoMeses.push(value.mes);
+      tarifaMeses.push(value.mes);
 
       const parsedDate = parse(key, "MM-yyyy", new Date());
       const formattedDate = format(parsedDate, "MMM yy", { locale: ptBR });
       listaConMeses.push(
         //Primeira letra maíuscula
-        formattedDate[0].toUpperCase() + formattedDate.substring(1)
-        //Removendo o ano, caso seja o ano atual, para ficar apenas o mes
-        .replace(new Date().getFullYear().toString().substring(2), ""));
+        formattedDate[0].toUpperCase() +
+          formattedDate
+            .substring(1)
+            //Removendo o ano, caso seja o ano atual, para ficar apenas o mes
+            .replace(new Date().getFullYear().toString().substring(2), "")
+      );
     });
 
     validGainLossConsumoMes(consumoMeses);
+    validGainLossTarifaMes(tarifaMeses)
 
     setConsumoMes(consumoMesAtual?.mes);
     setConsumoTotalMes(consumoMesAtual?.total);
+    setTarifaMes(consumoMesAtual?.tarifa)
 
     setListaConsumoMeses(consumoMeses);
     setListaMeses(listaConMeses);
@@ -239,6 +191,14 @@ export default function MainDashboard() {
     const gainLoss = ((values[0] - values[1]) / values[1]) * 100;
 
     setGainLossConsumo(Number(gainLoss.toFixed(0)));
+  }
+
+  function validGainLossTarifaMes(values: number[]) {
+    values.reverse();
+
+    const gainLoss = ((values[0] - values[1]) / values[1]) * 100;
+
+    setGainLossTarifa(Number(gainLoss.toFixed(0)));
   }
 
   return (
@@ -263,7 +223,7 @@ export default function MainDashboard() {
           contentText={`${consumoMes ?? 0} L`}
           gainLoss={{
             gain: gainLossConsumo > 0,
-            percentage: gainLossConsumo,
+            percentage: Number.isNaN(gainLossConsumo) ? 0 : gainLossConsumo,
             text: "Baseado no mês passado",
           }}
           title="Consumo mensal"
@@ -271,10 +231,10 @@ export default function MainDashboard() {
 
         <HeaderCard
           iconColor="#2e7d32"
-          contentText="R$ 350,00"
+          contentText={`R$ ${tarifaMes ?? 0}`}
           gainLoss={{
-            gain: true,
-            percentage: 16,
+            gain: gainLossTarifa > 0,
+            percentage: Number.isNaN(gainLossTarifa) ? 0 : gainLossTarifa,
             text: "Baseado no mês passado",
           }}
           icon={
