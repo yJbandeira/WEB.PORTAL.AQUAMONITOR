@@ -2,6 +2,8 @@ import React, { FC, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import ReactApexChart from "react-apexcharts";
+import { SvgIcon } from "@mui/material";
+import { ReactComponent as EmptyCalendar } from "../../assets/svg/EmptyCalendar.svg";
 
 interface IncomeAreaChartProps {
   slot: any;
@@ -125,20 +127,38 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({
         data:
           slot === "month"
             ? [110, 60, 150, 35, 60, 36, 26, 45, 65, 52, 53, 41]
-            : [11, 32, 20, 12, 5, 25],
+            : [11, 50, 20, 40],
       },
     ]);
   }, [slot, listaConsumoDias, listaConsumoMeses]);
 
   return (
-    <div style={{ maxWidth: 1400 }}>
-      <ReactApexChart
-        options={options}
-        series={series}
-        type="area"
-        height={height}
-      />
-    </div>
+    <>
+      {slot === "month" && listaConsumoMeses.length === 1 ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            alignContent: "center",
+          }}
+        >
+          <EmptyCalendar />
+          <p>
+            Ainda não existem dados suficientes para trazer os dados passados
+          </p>
+        </div>
+      ) : (
+        <div style={{ maxWidth: 1400 }}>
+          <ReactApexChart
+            options={options}
+            series={series}
+            type="area"
+            height={height}
+          />
+        </div>
+      )}
+    </>
   );
 };
 
