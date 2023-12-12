@@ -1,17 +1,11 @@
 import {
   Avatar,
   Backdrop,
-  Badge,
   IconButton,
   Stack,
   SvgIcon,
-  Tooltip,
 } from "@mui/material";
-import BellIcon from "@heroicons/react/24/solid/BellIcon";
-import UsersIcon from "@heroicons/react/24/solid/UsersIcon";
 import Bars3Icon from "@heroicons/react/24/solid/Bars3Icon";
-import AvatarTest from "../../assets/images/AvatarTest.jpg";
-import MagnifyingGlassIcon from "@heroicons/react/24/solid/MagnifyingGlassIcon";
 import "./index.scss";
 import { useState } from "react";
 
