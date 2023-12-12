@@ -2,7 +2,6 @@ import React, { FC, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useTheme } from "@mui/material/styles";
 import ReactApexChart from "react-apexcharts";
-import { SvgIcon } from "@mui/material";
 import { ReactComponent as EmptyCalendar } from "../../assets/svg/EmptyCalendar.svg";
 
 interface IncomeAreaChartProps {
