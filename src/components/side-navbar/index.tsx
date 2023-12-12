@@ -6,7 +6,7 @@ import SideNavItem from "./side-navbar-item";
 
 export default function SideNavbar() {
   return (
-    <div className="side-navbar-background">
+    <div id="side-navbar-bg" className="side-navbar-background">
       <div className="side-navbar-header">
         <AquaLogo />
       </div>

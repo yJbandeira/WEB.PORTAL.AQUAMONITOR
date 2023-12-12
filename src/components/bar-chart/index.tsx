@@ -32,7 +32,14 @@ const areaChartOptions = {
   },
 };
 
-const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumoDias, listaDiasSemana, listaConsumoMeses, listaMeses, height = 450 }) => {
+const IncomeAreaChart: FC<IncomeAreaChartProps> = ({
+  slot,
+  listaConsumoDias,
+  listaDiasSemana,
+  listaConsumoMeses,
+  listaMeses,
+  height = 450,
+}) => {
   const theme = useTheme();
 
   const { primary, secondary } = theme.palette.text;
@@ -45,10 +52,7 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumoDias, lis
       ...prevState,
       colors: ["#1E88E5", "#388E3C"],
       xaxis: {
-        categories:
-          slot === "month"
-            ? listaMeses
-            : listaDiasSemana,
+        categories: slot === "month" ? listaMeses : listaDiasSemana,
         labels: {
           style: {
             colors: [
@@ -87,7 +91,17 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumoDias, lis
         theme: "light",
       },
     }));
-  }, [primary, secondary, line, theme, slot, listaConsumoDias, listaConsumoMeses, listaMeses, listaDiasSemana]);
+  }, [
+    primary,
+    secondary,
+    line,
+    theme,
+    slot,
+    listaConsumoDias,
+    listaConsumoMeses,
+    listaMeses,
+    listaDiasSemana,
+  ]);
 
   const [series, setSeries] = useState<any>([
     {
@@ -104,10 +118,7 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumoDias, lis
     setSeries([
       {
         name: "Consumo em L",
-        data:
-          slot === "month"
-            ? listaConsumoMeses
-            : listaConsumoDias,
+        data: slot === "month" ? listaConsumoMeses : listaConsumoDias,
       },
       {
         name: "Média geral em L",
@@ -120,7 +131,7 @@ const IncomeAreaChart: FC<IncomeAreaChartProps> = ({ slot, listaConsumoDias, lis
   }, [slot, listaConsumoDias, listaConsumoMeses]);
 
   return (
-    <div style={{maxWidth: 1400}}>
+    <div style={{ maxWidth: 1400 }}>
       <ReactApexChart
         options={options}
         series={series}

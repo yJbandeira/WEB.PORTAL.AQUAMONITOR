@@ -248,76 +248,49 @@ export default function MainDashboard() {
       </div>
 
       <div className="charts-row">
-        <ChartCard
-          title="Consumo"
-          width="70%"
-          headerComponent={
-            <Stack direction="row" alignItems="center" spacing={0}>
-              <IconButton onClick={() => getConsumo()}>
-                <SvgIcon>
-                  <ArrowPathIcon />
-                </SvgIcon>
-              </IconButton>
-              <Button
-                size="small"
-                onClick={() => setSlot("month")}
-                color={slot === "month" ? "primary" : "secondary"}
-                variant={slot === "month" ? "outlined" : "text"}
-              >
-                Mês
-              </Button>
-              <Button
-                size="small"
-                onClick={() => setSlot("week")}
-                color={slot === "week" ? "primary" : "secondary"}
-                variant={slot === "week" ? "outlined" : "text"}
-              >
-                Semana
-              </Button>
-            </Stack>
-          }
-        >
-          <IncomeAreaChart
-            slot={slot}
-            height="530px"
-            listaConsumoDias={listaConsumoDias}
-            listaDiasSemana={listaDiasSemana}
-            listaConsumoMeses={listaConsumoMeses}
-            listaMeses={listaMeses}
-          />
-        </ChartCard>
-
-        <div
-          style={{
-            width: "30%",
-            display: "flex",
-            gap: "16px",
-            flexDirection: "column",
-          }}
-        >
+        <div className="main-chart">
           <ChartCard
-            title="Temperatura"
-            // headerComponent={
-            //   <Stack direction="row" alignItems="center" spacing={0}>
-            //     <Button
-            //       size="small"
-            //       onClick={() => setSlot("month")}
-            //       color={slot === "month" ? "primary" : "secondary"}
-            //       variant={slot === "month" ? "outlined" : "text"}
-            //     >
-            //       Mês
-            //     </Button>
-            //     <Button
-            //       size="small"
-            //       onClick={() => setSlot("week")}
-            //       color={slot === "week" ? "primary" : "secondary"}
-            //       variant={slot === "week" ? "outlined" : "text"}
-            //     >
-            //       Semana
-            //     </Button>
-            //   </Stack>
-            // }
+            title="Consumo"
+            //width="70%"
+            headerComponent={
+              <Stack direction="row" alignItems="center" spacing={0}>
+                <IconButton onClick={() => getConsumo()}>
+                  <SvgIcon>
+                    <ArrowPathIcon />
+                  </SvgIcon>
+                </IconButton>
+                <Button
+                  size="small"
+                  onClick={() => setSlot("month")}
+                  color={slot === "month" ? "primary" : "secondary"}
+                  variant={slot === "month" ? "outlined" : "text"}
+                >
+                  Mês
+                </Button>
+                <Button
+                  size="small"
+                  onClick={() => setSlot("week")}
+                  color={slot === "week" ? "primary" : "secondary"}
+                  variant={slot === "week" ? "outlined" : "text"}
+                >
+                  Semana
+                </Button>
+              </Stack>
+            }
           >
+            <IncomeAreaChart
+              slot={slot}
+              height="530px"
+              listaConsumoDias={listaConsumoDias}
+              listaDiasSemana={listaDiasSemana}
+              listaConsumoMeses={listaConsumoMeses}
+              listaMeses={listaMeses}
+            />
+          </ChartCard>
+        </div>
+
+        <div className="sub-charts">
+          <ChartCard title="Temperatura">
             <TempBarChart
               height="225px"
               listaTemperatura={listaTemperatura}
@@ -325,29 +298,7 @@ export default function MainDashboard() {
             />
           </ChartCard>
 
-          <ChartCard
-            title="Umidade"
-            // headerComponent={
-            //   <Stack direction="row" alignItems="center" spacing={0}>
-            //     <Button
-            //       size="small"
-            //       onClick={() => setSlot("month")}
-            //       color={slot === "month" ? "primary" : "secondary"}
-            //       variant={slot === "month" ? "outlined" : "text"}
-            //     >
-            //       Mês
-            //     </Button>
-            //     <Button
-            //       size="small"
-            //       onClick={() => setSlot("week")}
-            //       color={slot === "week" ? "primary" : "secondary"}
-            //       variant={slot === "week" ? "outlined" : "text"}
-            //     >
-            //       Semana
-            //     </Button>
-            //   </Stack>
-            // }
-          >
+          <ChartCard title="Umidade">
             <UmidadeBarChart
               height="225px"
               listaUmidade={listaUmidade}

@@ -14,14 +14,43 @@
   }
 }
 
-.headers-cards{
+.headers-cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.charts-row {
   display: flex;
   gap: 16px;
 }
 
-.charts-row{
-  display: flex;
-  gap: 16px;
+.main-chart {
+  width: 70%;
 }
 
+.sub-charts {
+  width: 30%;
+  display: flex;
+  gap: 16px;
+  flex-direction: column;
+}
 
+@media (max-width: 600px) {
+  .charts-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .main-chart {
+    width: 100%;
+  }
+
+  .sub-charts {
+    width: 100%;
+    display: flex;
+    gap: 16px;
+    flex-direction: column;
+  }
+}

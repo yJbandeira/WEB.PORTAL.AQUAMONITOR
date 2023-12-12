@@ -14,15 +14,15 @@ export const items = [
       </SvgIcon>
     ),
   },
-  {
-    title: "Clientes",
-    path: "/dashboard",
-    disable: false,
-    active: false,
-    icon: (
-      <SvgIcon fontSize="small">
-        <UserIcon />
-      </SvgIcon>
-    ),
-  },
+  // {
+  //   title: "Clientes",
+  //   path: "/dashboard",
+  //   disable: false,
+  //   active: false,
+  //   icon: (
+  //     <SvgIcon fontSize="small">
+  //       <UserIcon />
+  //     </SvgIcon>
+  //   ),
+  // },
 ];
